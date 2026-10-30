@@ -1,0 +1,122 @@
+# Random Forest Model Configuration: Young Sample with less than two children
+# This config contains all information needed for model replication
+
+model:
+  name: "only_yc"   
+  description: "Young (20-39) and up to one child random forest model."
+  model_type: "rf"  
+  
+# Data sample definition
+sample:
+  type: "only_yc"   
+  filters:
+    age_broad: 1
+    has_demo: 1  
+    has_fer: 1
+    same_sex_partner: 0
+    partner: ["2-Married", "1-Partner"]
+  additional_filters:
+    young: 1  # age 20-39
+    child_1: 1  # 0-1 children
+  
+# Features for the model
+features:
+  categorical:
+    - "cn"
+    - "educ_own" 
+    - "empl_lv"
+    - "educ_partner"
+    - "child_few"
+    - "subj_health"
+    - "religious"
+    - "female"
+    - "migrant"
+    - "earnings"
+    - "happy"
+    - "trust"
+    - "future_plan"
+    - "want_move"
+    - "isowner"
+    - "empl_partner"
+    - "partner"
+    - "missing_children"
+    
+  continuous:
+    - "age"
+    - "age_partner" 
+    - "std_tv_deaths"
+
+# Target variable
+target:
+  column: "fer_short2"
+  encoding:
+    "Definitely not": 1
+    "Probably not": 1
+    "Unsure": 2
+    "Probably yes": 3
+    "Definitely yes": 3
+    "Currently expecting a child": null
+
+# Data paths  
+data:
+  source_file: "../../replication_data/data_ready2.dta"
+  processed_data: "../../replication_output/processed_data.pkl"  # Shared across models
+  
+# Output configuration
+output:
+  base_path: "../../replication_output"
+  model_folder: "only_yc"  # It helps if this matches the model name
+  files:
+    model: "f1_couples_pipeline.pkl"
+    config: "analysis_config.yaml" 
+    hyperparameters: "best_hyperparameters.pkl"
+    hyperparameter_results: "f1_hyperparameters.csv"
+    feature_names: "pipeline_feature_names.pkl"
+    evaluation: "evaluation_results.csv"
+    permutation_importance: "permutation_importance.csv"
+    pdp_1d: "pdp_1d_results.csv"
+    pdp_2d: "pdp_2d_results.csv" 
+
+# Model training configuration
+training:
+  hyperparameter_tuning:
+    n_iterations: 10
+    n_iter_search: 50
+    scoring_metric: "f1_macro"
+    random_state: 1500
+  
+  final_model:
+    random_state: 42
+
+# Analysis configuration  
+analysis:
+  evaluation:
+    permutation_importance:
+      n_repeats: 10
+      random_state: 42
+  
+  interpretation:  
+    subsamples:
+      young_childless: false  # Already applied by sample filters
+    interaction_analysis:
+      max_features: 25
+      grid_size_2d: 15
+    partial_dependence:
+      grid_resolution: 10
+      custom_grids:
+        std_tv_deaths: [-0.75, 0, 0.75, 1.5, 2.25, 3.0]
+        age: [20, 24, 28, 32, 36, 38, 42, 46, 48]
+        age_partner: [20, 24, 28, 32, 36, 38, 42, 46, 48]
+
+  evaluation:
+    metrics: ["accuracy", "precision", "recall", "f1", "confusion_matrix"]
+    permutation_importance:
+      n_repeats: 10
+      random_state: 42
+      
+# Metadata  
+metadata:
+  created_date: "2026-10-30"
+  created_by: "Lucas"
+  description: "Random Forest model for fertility intentions analysis - young and with fewer than two children subsample"
+  version: "2.0"

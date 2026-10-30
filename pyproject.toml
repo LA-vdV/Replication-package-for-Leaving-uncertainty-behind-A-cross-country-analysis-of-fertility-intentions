@@ -1,0 +1,30 @@
+[project]
+name = "leaving-uncertainty-behind-replication"
+version = "1.0.0"
+description = "Replication code (Python part) for 'Leaving uncertainty behind' - random forest estimation called from Stata (03_random_forests.do)"
+readme = "README.md"
+requires-python = ">=3.10"
+
+# Lower bounds are the versions the results were produced with
+# (Python 3.12.7, Anaconda): pandas 2.2.2, numpy 1.26.4, scikit-learn 1.5.1,
+# scipy 1.13.1, PyYAML 6.0.3.
+dependencies = [
+    "numpy>=1.26.4",
+    "pandas>=2.2.2",
+    "scikit-learn>=1.5.1",
+    "scipy>=1.13.1",
+    "PyYAML>=6.0.3",
+]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = [
+    "config_utils",
+    "data_processor",
+    "rf_pipeline",
+    "rf_evaluation",
+    "rf_interpretation",
+]
